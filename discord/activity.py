@@ -15,6 +15,7 @@ __all__ = (
     'Game',
     'Spotify',
     'CustomActivity',
+    'Competing'
 )
 
 """If curious, this is the current schema for an activity.
@@ -747,3 +748,81 @@ def create_activity(data):
     elif game_type is ActivityType.listening and 'sync_id' in data and 'session_id' in data:
         return Spotify(**data)
     return Activity(**data)
+
+class Competing(BaseActivity):
+    """
+    ID: 5
+    Name: Custom Activity "Competing"
+    Format: Competing in {name}
+    Example: Competing in Arena World Champions
+
+    Adding 1.0(1.7.3)
+    """
+
+    __slots__ = ('name', '_end', '_start')
+
+    def __init__(self, name, **extra):
+        super().__init__(**extra)
+        self.name = name
+
+        try:
+            timestamps = extra['timestamps']
+        except KeyError:
+            self._extract_timestamp(extra, 'start')
+            self._extract_timestamp(extra, 'end')
+        else:
+            self._start = timestamps.get('start', 0)
+            self._end = timestamps.get('end', 0)
+
+    def _extract_timestamp(self, data, key):
+        try:
+            dt = data[key]
+        except KeyError:
+            setattr(self, '_' + key, 0)
+        else:
+            setattr(self, '_' + key, dt.timestamp() * 1000.0)
+
+    @property
+    def type(self):
+        return ActivityType.playing
+
+    @property
+    def start(self):
+        if self._start:
+            return datetime.datetime.utcfromtimestamp(self._start / 1000)
+        return None
+
+    @property
+    def end(self):
+        if self._end:
+            return datetime.datetime.utcfromtimestamp(self._end / 1000)
+        return None
+
+    def __str__(self):
+        return str(self.name)
+
+    def __repr__(self):
+        return '<Competing name={0.name!r}>'.format(self)
+
+    def to_dict(self):
+        timestamps = {}
+        if self._start:
+            timestamps['start'] = self._start
+
+        if self._end:
+            timestamps['end'] = self._end
+
+        return {
+            'type': ActivityType.competing.value,
+            'name': str(self.name),
+            'timestamps': timestamps
+        }
+
+    def __eq__(self, other):
+        return isinstance(other, Competing) and other.name == self.name
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(self.name)
