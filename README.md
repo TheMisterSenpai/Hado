@@ -1,12 +1,10 @@
-# PyCord
+# Hado
 Unoffical Discord Api Wrapper. The library works on [discord.py 1.7.3](https://github.com/Rapptz/discord.py/tree/v1.7.3)
 
+![](https://i.pinimg.com/564x/cf/b1/f8/cfb1f8040cdaa1a23a9d25c4ef9dc11a.jpg)
 
-<a href="https://discord.gg/B9RSCmR4dj">
-  <img src="http://invidget.switchblade.xyz/B9RSCmR4dj" />
-</a>
 
-## What is PyCord?
+## What is Hado?
 The project is an extension of the library [discord.py](https://github.com/Rapptz/discord.py), which is currently a closed project.
 
 ## What is planned to added
@@ -19,3 +17,8 @@ The project is an extension of the library [discord.py](https://github.com/Rappt
 - [ ] Add created threads
 - [ ] Custom status
 - [ ] New standart help
+
+
+<a href="https://discord.gg/B9RSCmR4dj">
+  <img src="http://invidget.switchblade.xyz/B9RSCmR4dj" />
+</a>

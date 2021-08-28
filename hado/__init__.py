@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__title__ = 'pycord'
+__title__ = 'hado'
 __author__ = 'TheMisterSenpai'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2021 TheMisterSenpai'
