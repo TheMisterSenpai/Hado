@@ -14,6 +14,7 @@ The project is an extension of the library [discord.py](https://github.com/Rappt
 - Updating new changes
 
 ## TODO
+- [ ] Support discord.com/api/v9
 - [ ] Add from the support library slash commands
 - [ ] Add created threads
 - [ ] Custom statuses
