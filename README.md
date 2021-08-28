@@ -19,6 +19,6 @@ The project is an extension of the library [discord.py](https://github.com/Rappt
 - [ ] New standart help
 
 
-<a href="https://discord.gg/qAaw5kzzBn">
-  <img src="http://invidget.switchblade.xyz/qAaw5kzzBn" />
+<a href="https://discord.gg/pC8WAeR2">
+  <img src="http://invidget.switchblade.xyz/pC8WAeR2" />
 </a>
