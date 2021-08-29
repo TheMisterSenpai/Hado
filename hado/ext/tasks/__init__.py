@@ -3,7 +3,7 @@
 import asyncio
 import datetime
 import aiohttp
-import discord
+import hado
 import inspect
 import logging
 import sys
@@ -28,8 +28,8 @@ class Loop:
         self._injected = None
         self._valid_exception = (
             OSError,
-            discord.GatewayNotFound,
-            discord.ConnectionClosed,
+            hado.GatewayNotFound,
+            hado.ConnectionClosed,
             aiohttp.ClientError,
             asyncio.TimeoutError,
         )
@@ -64,7 +64,7 @@ class Loop:
     async def _loop(self, *args, **kwargs):
         backoff = ExponentialBackoff()
         await self._call_loop_function('before_loop')
-        sleep_until = discord.utils.sleep_until
+        sleep_until = hado.utils.sleep_until
         self._last_iteration_failed = False
         self._next_iteration = datetime.datetime.now(datetime.timezone.utc)
         try:

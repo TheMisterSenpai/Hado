@@ -14,7 +14,7 @@ extras_require = {
 }
 
 setup(name='hado',
-      version='1.1.2',
+      version='1.0',
       description='Unoffical Discord Api Wrapper. The library works on discord.py 1.7.3',
       license='MIT',
       packages=['hado'],
