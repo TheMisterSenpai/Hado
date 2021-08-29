@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from discord.enums import Enum
+from hado.enums import Enum
 import time
 import asyncio
 from collections import deque

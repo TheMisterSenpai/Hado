@@ -2,7 +2,7 @@
 
 from collections import namedtuple
 
-import discord.abc
+import hado.abc
 from .flags import PublicUserFlags
 from .utils import snowflake_time, _bytes_to_base64_data, parse_time
 from .enums import DefaultAvatar, RelationshipType, UserFlags, HypeSquadHouse, PremiumType, try_enum
@@ -57,7 +57,7 @@ class Profile(namedtuple('Profile', 'flags user mutual_guilds connected_accounts
     def system(self):
         return self._has_flag(UserFlags.system)
 
-_BaseUser = discord.abc.User
+_BaseUser = hado.abc.User
 
 class BaseUser(_BaseUser):
     __slots__ = ('name', 'id', 'discriminator', 'avatar', 'bot', 'system', '_public_flags', '_state')
@@ -652,7 +652,7 @@ class ClientUser(BaseUser):
         data = await self._state.http.edit_settings(**payload)
         return data
 
-class User(BaseUser, discord.abc.Messageable):
+class User(BaseUser, hado.abc.Messageable):
     """Represents a Discord user.
 
     .. container:: operations

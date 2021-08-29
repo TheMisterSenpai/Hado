@@ -4,7 +4,7 @@ import re
 import inspect
 import typing
 
-import discord
+import hado
 
 from .errors import *
 
@@ -40,7 +40,7 @@ def _get_from_guilds(bot, getter, argument):
             return result
     return result
 
-_utils_get = discord.utils.get
+_utils_get = hado.utils.get
 
 class Converter:
     """The base class of custom converters that require the :class:`.Context`
@@ -113,10 +113,10 @@ class MemberConverter(IDConverter):
         if len(argument) > 5 and argument[-5] == '#':
             username, _, discriminator = argument.rpartition('#')
             members = await guild.query_members(username, limit=100, cache=cache)
-            return discord.utils.get(members, name=username, discriminator=discriminator)
+            return hado.utils.get(members, name=username, discriminator=discriminator)
         else:
             members = await guild.query_members(argument, limit=100, cache=cache)
-            return discord.utils.find(lambda m: m.name == argument or m.nick == argument, members)
+            return hado.utils.find(lambda m: m.name == argument or m.nick == argument, members)
 
     async def query_member_by_id(self, bot, guild, user_id):
         ws = bot._get_websocket(shard_id=guild.shard_id)
@@ -126,7 +126,7 @@ class MemberConverter(IDConverter):
             # So we don't have to wait ~60 seconds for the query to finish
             try:
                 member = await guild.fetch_member(user_id)
-            except discord.HTTPException:
+            except hado.HTTPException:
                 return None
 
             if cache:
@@ -202,7 +202,7 @@ class UserConverter(IDConverter):
             if result is None:
                 try:
                     result = await ctx.bot.fetch_user(user_id)
-                except discord.HTTPException:
+                except hado.HTTPException:
                     raise UserNotFound(argument) from None
 
             return result
@@ -219,12 +219,12 @@ class UserConverter(IDConverter):
             discrim = arg[-4:]
             name = arg[:-5]
             predicate = lambda u: u.name == name and u.discriminator == discrim
-            result = discord.utils.find(predicate, state._users.values())
+            result = hado.utils.find(predicate, state._users.values())
             if result is not None:
                 return result
 
         predicate = lambda u: u.name == arg
-        result = discord.utils.find(predicate, state._users.values())
+        result = hado.utils.find(predicate, state._users.values())
 
         if result is None:
             raise UserNotFound(argument)
@@ -260,7 +260,7 @@ class PartialMessageConverter(Converter):
         channel = ctx.bot.get_channel(channel_id) if channel_id else ctx.channel
         if not channel:
             raise ChannelNotFound(channel_id)
-        return discord.PartialMessage(channel=channel, id=message_id)
+        return hado.PartialMessage(channel=channel, id=message_id)
 
 class MessageConverter(PartialMessageConverter):
     """Converts to a :class:`discord.Message`.
@@ -286,9 +286,9 @@ class MessageConverter(PartialMessageConverter):
             raise ChannelNotFound(channel_id)
         try:
             return await channel.fetch_message(message_id)
-        except discord.NotFound:
+        except hado.NotFound:
             raise MessageNotFound(argument)
-        except discord.Forbidden:
+        except hado.Forbidden:
             raise ChannelNotReadable(channel)
 
 class TextChannelConverter(IDConverter):
@@ -316,11 +316,11 @@ class TextChannelConverter(IDConverter):
         if match is None:
             # not a mention
             if guild:
-                result = discord.utils.get(guild.text_channels, name=argument)
+                result = hado.utils.get(guild.text_channels, name=argument)
             else:
                 def check(c):
-                    return isinstance(c, discord.TextChannel) and c.name == argument
-                result = discord.utils.find(check, bot.get_all_channels())
+                    return isinstance(c, hado.TextChannel) and c.name == argument
+                result = hado.utils.find(check, bot.get_all_channels())
         else:
             channel_id = int(match.group(1))
             if guild:
@@ -328,7 +328,7 @@ class TextChannelConverter(IDConverter):
             else:
                 result = _get_from_guilds(bot, 'get_channel', channel_id)
 
-        if not isinstance(result, discord.TextChannel):
+        if not isinstance(result, hado.TextChannel):
             raise ChannelNotFound(argument)
 
         return result
@@ -357,11 +357,11 @@ class VoiceChannelConverter(IDConverter):
         if match is None:
             # not a mention
             if guild:
-                result = discord.utils.get(guild.voice_channels, name=argument)
+                result = hado.utils.get(guild.voice_channels, name=argument)
             else:
                 def check(c):
-                    return isinstance(c, discord.VoiceChannel) and c.name == argument
-                result = discord.utils.find(check, bot.get_all_channels())
+                    return isinstance(c, hado.VoiceChannel) and c.name == argument
+                result = hado.utils.find(check, bot.get_all_channels())
         else:
             channel_id = int(match.group(1))
             if guild:
@@ -369,7 +369,7 @@ class VoiceChannelConverter(IDConverter):
             else:
                 result = _get_from_guilds(bot, 'get_channel', channel_id)
 
-        if not isinstance(result, discord.VoiceChannel):
+        if not isinstance(result, hado.VoiceChannel):
             raise ChannelNotFound(argument)
 
         return result
@@ -397,11 +397,11 @@ class StageChannelConverter(IDConverter):
         if match is None:
             # not a mention
             if guild:
-                result = discord.utils.get(guild.stage_channels, name=argument)
+                result = hado.utils.get(guild.stage_channels, name=argument)
             else:
                 def check(c):
-                    return isinstance(c, discord.StageChannel) and c.name == argument
-                result = discord.utils.find(check, bot.get_all_channels())
+                    return isinstance(c, hado.StageChannel) and c.name == argument
+                result = hado.utils.find(check, bot.get_all_channels())
         else:
             channel_id = int(match.group(1))
             if guild:
@@ -409,7 +409,7 @@ class StageChannelConverter(IDConverter):
             else:
                 result = _get_from_guilds(bot, 'get_channel', channel_id)
 
-        if not isinstance(result, discord.StageChannel):
+        if not isinstance(result, hado.StageChannel):
             raise ChannelNotFound(argument)
 
         return result
@@ -439,11 +439,11 @@ class CategoryChannelConverter(IDConverter):
         if match is None:
             # not a mention
             if guild:
-                result = discord.utils.get(guild.categories, name=argument)
+                result = hado.utils.get(guild.categories, name=argument)
             else:
                 def check(c):
-                    return isinstance(c, discord.CategoryChannel) and c.name == argument
-                result = discord.utils.find(check, bot.get_all_channels())
+                    return isinstance(c, hado.CategoryChannel) and c.name == argument
+                result = hado.utils.find(check, bot.get_all_channels())
         else:
             channel_id = int(match.group(1))
             if guild:
@@ -451,7 +451,7 @@ class CategoryChannelConverter(IDConverter):
             else:
                 result = _get_from_guilds(bot, 'get_channel', channel_id)
 
-        if not isinstance(result, discord.CategoryChannel):
+        if not isinstance(result, hado.CategoryChannel):
             raise ChannelNotFound(argument)
 
         return result
@@ -480,11 +480,11 @@ class StoreChannelConverter(IDConverter):
         if match is None:
             # not a mention
             if guild:
-                result = discord.utils.get(guild.channels, name=argument)
+                result = hado.utils.get(guild.channels, name=argument)
             else:
                 def check(c):
-                    return isinstance(c, discord.StoreChannel) and c.name == argument
-                result = discord.utils.find(check, bot.get_all_channels())
+                    return isinstance(c, hado.StoreChannel) and c.name == argument
+                result = hado.utils.find(check, bot.get_all_channels())
         else:
             channel_id = int(match.group(1))
             if guild:
@@ -492,7 +492,7 @@ class StoreChannelConverter(IDConverter):
             else:
                 result = _get_from_guilds(bot, 'get_channel', channel_id)
 
-        if not isinstance(result, discord.StoreChannel):
+        if not isinstance(result, hado.StoreChannel):
             raise ChannelNotFound(argument)
 
         return result
@@ -534,7 +534,7 @@ class ColourConverter(Converter):
         except ValueError:
             raise BadColourArgument(argument)
         else:
-            return discord.Color(value=value)
+            return hado.Color(value=value)
 
     def parse_rgb_number(self, argument, number):
         if number[-1] == '%':
@@ -556,7 +556,7 @@ class ColourConverter(Converter):
         red = self.parse_rgb_number(argument, match.group('r'))
         green = self.parse_rgb_number(argument, match.group('g'))
         blue = self.parse_rgb_number(argument, match.group('b'))
-        return discord.Color.from_rgb(red, green, blue)
+        return hado.Color.from_rgb(red, green, blue)
 
     async def convert(self, ctx, argument):
         if argument[0] == '#':
@@ -574,7 +574,7 @@ class ColourConverter(Converter):
             return self.parse_rgb(arg)
 
         arg = arg.replace(' ', '_')
-        method = getattr(discord.Colour, arg, None)
+        method = getattr(hado.Colour, arg, None)
         if arg.startswith('from_') or method is None or not inspect.ismethod(method):
             raise BadColourArgument(arg)
         return method()
@@ -605,7 +605,7 @@ class RoleConverter(IDConverter):
         if match:
             result = guild.get_role(int(match.group(1)))
         else:
-            result = discord.utils.get(guild._roles.values(), name=argument)
+            result = hado.utils.get(guild._roles.values(), name=argument)
 
         if result is None:
             raise RoleNotFound(argument)
@@ -614,7 +614,7 @@ class RoleConverter(IDConverter):
 class GameConverter(Converter):
     """Converts to :class:`~discord.Game`."""
     async def convert(self, ctx, argument):
-        return discord.Game(name=argument)
+        return hado.Game(name=argument)
 
 class InviteConverter(Converter):
     """Converts to a :class:`~discord.Invite`.
@@ -651,7 +651,7 @@ class GuildConverter(IDConverter):
             result = ctx.bot.get_guild(guild_id)
 
         if result is None:
-            result = discord.utils.get(ctx.bot.guilds, name=argument)
+            result = hado.utils.get(ctx.bot.guilds, name=argument)
 
             if result is None:
                 raise GuildNotFound(argument)
@@ -681,19 +681,19 @@ class EmojiConverter(IDConverter):
         if match is None:
             # Try to get the emoji by name. Try local guild first.
             if guild:
-                result = discord.utils.get(guild.emojis, name=argument)
+                result = hado.utils.get(guild.emojis, name=argument)
 
             if result is None:
-                result = discord.utils.get(bot.emojis, name=argument)
+                result = hado.utils.get(bot.emojis, name=argument)
         else:
             emoji_id = int(match.group(1))
 
             # Try to look up emoji by id.
             if guild:
-                result = discord.utils.get(guild.emojis, id=emoji_id)
+                result = hado.utils.get(guild.emojis, id=emoji_id)
 
             if result is None:
-                result = discord.utils.get(bot.emojis, id=emoji_id)
+                result = hado.utils.get(bot.emojis, id=emoji_id)
 
         if result is None:
             raise EmojiNotFound(argument)
@@ -716,7 +716,7 @@ class PartialEmojiConverter(Converter):
             emoji_name = match.group(2)
             emoji_id = int(match.group(3))
 
-            return discord.PartialEmoji.with_state(ctx.bot._connection, animated=emoji_animated, name=emoji_name,
+            return hado.PartialEmoji.with_state(ctx.bot._connection, animated=emoji_animated, name=emoji_name,
                                                    id=emoji_id)
 
         raise PartialEmojiConversionFailure(argument)
@@ -794,12 +794,12 @@ class clean_content(Converter):
         result = pattern.sub(repl, argument)
 
         if self.escape_markdown:
-            result = discord.utils.escape_markdown(result)
+            result = hado.utils.escape_markdown(result)
         elif self.remove_markdown:
-            result = discord.utils.remove_markdown(result)
+            result = hado.utils.remove_markdown(result)
 
         # Completely ensure no mentions escape:
-        return discord.utils.escape_mentions(result)
+        return hado.utils.escape_mentions(result)
 
 class _Greedy:
     __slots__ = ('converter',)

@@ -6,7 +6,7 @@ import inspect
 import typing
 import datetime
 
-import discord
+import hado
 
 from .errors import *
 from .cooldowns import Cooldown, BucketType, CooldownMapping, MaxConcurrency
@@ -659,14 +659,14 @@ class Command(_BaseCommand):
                 next(iterator)
             except StopIteration:
                 fmt = 'Callback for {0.name} command is missing "self" parameter.'
-                raise discord.ClientException(fmt.format(self))
+                raise hado.ClientException(fmt.format(self))
 
         # next we have the 'ctx' as the next parameter
         try:
             next(iterator)
         except StopIteration:
             fmt = 'Callback for {0.name} command is missing "ctx" parameter.'
-            raise discord.ClientException(fmt.format(self))
+            raise hado.ClientException(fmt.format(self))
 
         for name, param in iterator:
             if param.kind == param.POSITIONAL_OR_KEYWORD or param.kind == param.POSITIONAL_ONLY:
@@ -1051,7 +1051,7 @@ class Command(_BaseCommand):
             if cog is not None:
                 local_check = Cog._get_overridden_method(cog.cog_check)
                 if local_check is not None:
-                    ret = await discord.utils.maybe_coroutine(local_check, ctx)
+                    ret = await hado.utils.maybe_coroutine(local_check, ctx)
                     if not ret:
                         return False
 
@@ -1060,7 +1060,7 @@ class Command(_BaseCommand):
                 # since we have no checks, then we just return True.
                 return True
 
-            return await discord.utils.async_all(predicate(ctx) for predicate in predicates)
+            return await hado.utils.async_all(predicate(ctx) for predicate in predicates)
         finally:
             ctx.command = original
 
@@ -1611,13 +1611,13 @@ def has_role(item):
     """
 
     def predicate(ctx):
-        if not isinstance(ctx.channel, discord.abc.GuildChannel):
+        if not isinstance(ctx.channel, hado.abc.GuildChannel):
             raise NoPrivateMessage()
 
         if isinstance(item, int):
-            role = discord.utils.get(ctx.author.roles, id=item)
+            role = hado.utils.get(ctx.author.roles, id=item)
         else:
-            role = discord.utils.get(ctx.author.roles, name=item)
+            role = hado.utils.get(ctx.author.roles, name=item)
         if role is None:
             raise MissingRole(item)
         return True
@@ -1656,10 +1656,10 @@ def has_any_role(*items):
             await ctx.send('You are cool indeed')
     """
     def predicate(ctx):
-        if not isinstance(ctx.channel, discord.abc.GuildChannel):
+        if not isinstance(ctx.channel, hado.abc.GuildChannel):
             raise NoPrivateMessage()
 
-        getter = functools.partial(discord.utils.get, ctx.author.roles)
+        getter = functools.partial(hado.utils.get, ctx.author.roles)
         if any(getter(id=item) is not None if isinstance(item, int) else getter(name=item) is not None for item in items):
             return True
         raise MissingAnyRole(items)
@@ -1682,14 +1682,14 @@ def bot_has_role(item):
 
     def predicate(ctx):
         ch = ctx.channel
-        if not isinstance(ch, discord.abc.GuildChannel):
+        if not isinstance(ch, hado.abc.GuildChannel):
             raise NoPrivateMessage()
 
         me = ch.guild.me
         if isinstance(item, int):
-            role = discord.utils.get(me.roles, id=item)
+            role = hado.utils.get(me.roles, id=item)
         else:
-            role = discord.utils.get(me.roles, name=item)
+            role = hado.utils.get(me.roles, name=item)
         if role is None:
             raise BotMissingRole(item)
         return True
@@ -1710,11 +1710,11 @@ def bot_has_any_role(*items):
     """
     def predicate(ctx):
         ch = ctx.channel
-        if not isinstance(ch, discord.abc.GuildChannel):
+        if not isinstance(ch, hado.abc.GuildChannel):
             raise NoPrivateMessage()
 
         me = ch.guild.me
-        getter = functools.partial(discord.utils.get, me.roles)
+        getter = functools.partial(hado.utils.get, me.roles)
         if any(getter(id=item) is not None if isinstance(item, int) else getter(name=item) is not None for item in items):
             return True
         raise BotMissingAnyRole(items)
@@ -1750,7 +1750,7 @@ def has_permissions(**perms):
 
     """
 
-    invalid = set(perms) - set(discord.Permissions.VALID_FLAGS)
+    invalid = set(perms) - set(hado.Permissions.VALID_FLAGS)
     if invalid:
         raise TypeError('Invalid permission(s): %s' % (', '.join(invalid)))
 
@@ -1775,7 +1775,7 @@ def bot_has_permissions(**perms):
     that is inherited from :exc:`.CheckFailure`.
     """
 
-    invalid = set(perms) - set(discord.Permissions.VALID_FLAGS)
+    invalid = set(perms) - set(hado.Permissions.VALID_FLAGS)
     if invalid:
         raise TypeError('Invalid permission(s): %s' % (', '.join(invalid)))
 
@@ -1803,7 +1803,7 @@ def has_guild_permissions(**perms):
     .. versionadded:: 1.3
     """
 
-    invalid = set(perms) - set(discord.Permissions.VALID_FLAGS)
+    invalid = set(perms) - set(hado.Permissions.VALID_FLAGS)
     if invalid:
         raise TypeError('Invalid permission(s): %s' % (', '.join(invalid)))
 
@@ -1828,7 +1828,7 @@ def bot_has_guild_permissions(**perms):
     .. versionadded:: 1.3
     """
 
-    invalid = set(perms) - set(discord.Permissions.VALID_FLAGS)
+    invalid = set(perms) - set(hado.Permissions.VALID_FLAGS)
     if invalid:
         raise TypeError('Invalid permission(s): %s' % (', '.join(invalid)))
 
@@ -1910,7 +1910,7 @@ def is_nsfw():
     """
     def pred(ctx):
         ch = ctx.channel
-        if ctx.guild is None or (isinstance(ch, discord.TextChannel) and ch.is_nsfw()):
+        if ctx.guild is None or (isinstance(ch, hado.TextChannel) and ch.is_nsfw()):
             return True
         raise NSFWChannelRequired(ch)
     return check(pred)

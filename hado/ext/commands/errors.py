@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from discord.errors import ClientException, DiscordException
+from hado.errors import ClientException, DiscordException
 
 
 __all__ = (
@@ -56,7 +56,7 @@ __all__ = (
 class CommandError(DiscordException):
     r"""The base exception type for all command related errors.
 
-    This inherits from :exc:`discord.DiscordException`.
+    This inherits from :exc:`hado.DiscordException`.
 
     This exception and exceptions inherited from it are handled
     in a special way as they are caught and passed into a special event
@@ -77,7 +77,7 @@ class ConversionError(CommandError):
 
     Attributes
     ----------
-    converter: :class:`discord.ext.commands.Converter`
+    converter: :class:`hado.ext.commands.Converter`
         The converter that failed.
     original: :exc:`Exception`
         The original exception that was raised. You can also get this via

@@ -8,8 +8,7 @@ import sys
 import traceback
 import types
 
-import discord
-
+import hado
 from .core import GroupMixin
 from .view import StringView
 from .context import Context
@@ -263,7 +262,7 @@ class BotBase(GroupMixin):
         if len(data) == 0:
             return True
 
-        return await discord.utils.async_all(f(ctx) for f in data)
+        return await hado.utils.async_all(f(ctx) for f in data)
 
     async def is_owner(self, user):
         """|coro|
@@ -804,7 +803,7 @@ class BotBase(GroupMixin):
         """
         prefix = ret = self.command_prefix
         if callable(prefix):
-            ret = await discord.utils.maybe_coroutine(prefix, self, message)
+            ret = await hado.utils.maybe_coroutine(prefix, self, message)
 
         if not isinstance(ret, str):
             try:
@@ -870,7 +869,7 @@ class BotBase(GroupMixin):
                 # if the context class' __init__ consumes something from the view this
                 # will be wrong.  That seems unreasonable though.
                 if message.content.startswith(tuple(prefix)):
-                    invoked_prefix = discord.utils.find(view.skip_string, prefix)
+                    invoked_prefix = hado.utils.find(view.skip_string, prefix)
                 else:
                     return ctx
 
@@ -954,7 +953,7 @@ class BotBase(GroupMixin):
     async def on_message(self, message):
         await self.process_commands(message)
 
-class Bot(BotBase, discord.Client):
+class Bot(BotBase, hado.Client):
     """Represents a discord bot.
 
     This class is a subclass of :class:`discord.Client` and as a result
@@ -1030,7 +1029,7 @@ class Bot(BotBase, discord.Client):
     """
     pass
 
-class AutoShardedBot(BotBase, discord.AutoShardedClient):
+class AutoShardedBot(BotBase, hado.AutoShardedClient):
     """This is similar to :class:`.Bot` except that it is inherited from
     :class:`discord.AutoShardedClient` instead.
     """
