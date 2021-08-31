@@ -9,7 +9,7 @@ import logging
 import sys
 import traceback
 
-from discord.backoff import ExponentialBackoff
+from hado.backoff import ExponentialBackoff
 
 log = logging.getLogger(__name__)
 
