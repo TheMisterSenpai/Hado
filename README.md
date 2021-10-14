@@ -17,8 +17,3 @@ The project is an extension of the library [discord.py](https://github.com/Rappt
 - [ ] Add created threads
 - [ ] Custom status
 - [ ] New standart help
-
-
-<a href="https://discord.gg/pC8WAeR2">
-  <img src="http://invidget.switchblade.xyz/pC8WAeR2" />
-</a>
